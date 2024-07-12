@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
 
 const sendEmail = async (emails,subject,html) => {
     const info = await transporter.sendMail({
-        from: `"CyberQuest💀" <${process.env.USER}>`, // sender address
+        from: `"Waste Management ♻️" <${process.env.USER}>`, // sender address
         to: emails, // list of receivers
         subject: subject, // Subject line
         text: "You are Here ✅", // plain text body
