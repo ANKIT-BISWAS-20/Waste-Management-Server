@@ -13,7 +13,7 @@ const requestSchema = new Schema(
             required: true
         },
         reqPrice: {
-            type: [Number],
+            type: [String],
         },
     }, 
     {

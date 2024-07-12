@@ -28,13 +28,13 @@ const pickupSchema = new Schema(
             default: "pending"
         },
         location: {
-            type: [Number],
+            type: [String],
         },
         customerPrice: {
-            type: [Number],
+            type: [String],
         },
         workerPrice: {
-            type: [Number],
+            type: [String],
         },
         paymentDone: {
             type: Boolean,

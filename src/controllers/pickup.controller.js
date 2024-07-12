@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv"
 const { ObjectId } = mongoose.Types;
 import axios from "axios"
+import {sendEmail} from "../utils/sendMail.js";
 
 dotenv.config({
     path: './.env'
@@ -42,6 +43,7 @@ const createPickup = asyncHandler(async (req, res) => {
         description,
         location,
         customerPrice,
+        thumbnail:thumbnail.url,
         owner: current_user._id,
     })
 
@@ -52,7 +54,7 @@ const createPickup = asyncHandler(async (req, res) => {
     }
 
     await sendEmail(
-        [email], "Pickup Created Successfully", `<h1>Hello ${fullName},</h1><br><h2>Your Pickup [ id : ${myPickup._id}] has been created successfully</h2>`
+        [current_user.email], "Pickup Created Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Pickup [ id : ${myPickup._id}] has been created successfully</h2>`
     );
 
 
@@ -74,6 +76,9 @@ const deletePickup = asyncHandler(async (req, res) => {
     }
     if (myPickup.owner.toString() !== current_user._id.toString()) {
         throw new ApiError(401, "Not Pickup Customer")
+    }
+    if (myPickup.status !== "pending") {
+        throw new ApiError(400, "It is not possible to delete a pickup that is not pending")
     }
     await Pickup.findByIdAndDelete(pickupId)
     return res.status(200).json(

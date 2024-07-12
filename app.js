@@ -19,4 +19,8 @@ app.use("/",serverStatusRouter);
 import userRouter from './src/routes/user.routes.js'
 app.use("/api/v1/users", userRouter)
 
+// Pickup Endpoints
+import pickupRouter from './src/routes/pickup.routes.js'
+app.use("/api/v1/pickup", pickupRouter)
+
 export { app }
