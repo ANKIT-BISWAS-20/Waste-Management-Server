@@ -3,6 +3,10 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const pickupSchema = new Schema(
     {
+        description: {
+            type: String,
+            required: true
+        },
         acceptedWorker: {
             type: Schema.Types.ObjectId,
             ref: "User"
