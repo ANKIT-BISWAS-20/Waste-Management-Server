@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const pickupSchema = new Schema(
     {
-        acceptedPickup: {
+        acceptedWorker: {
             type: Schema.Types.ObjectId,
             ref: "User"
         },
@@ -29,7 +29,7 @@ const pickupSchema = new Schema(
         customerPrice: {
             type: [Number],
         },
-        pickerPrice: {
+        workerPrice: {
             type: [Number],
         },
         paymentDone: {
