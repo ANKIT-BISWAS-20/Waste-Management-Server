@@ -3,10 +3,9 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const pickupSchema = new Schema(
     {
-        classname: {
-            type: String,
-            required: true,
-            index: true
+        acceptedPickup: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
         },
         thumbnail: {
             type: String, 
