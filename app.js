@@ -15,4 +15,8 @@ app.use(express.static("public"))
 import serverStatusRouter from "./src/routes/serverStatus.routes.js"
 app.use("/",serverStatusRouter);
 
+// User Endpoints
+import userRouter from './src/routes/user.routes.js'
+app.use("/api/v1/users", userRouter)
+
 export { app }
