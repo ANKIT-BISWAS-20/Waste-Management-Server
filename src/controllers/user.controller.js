@@ -244,3 +244,6 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
         new ApiResponse(200, user, "Avatar image updated successfully")
     )
 });
+
+
+export {registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar};
