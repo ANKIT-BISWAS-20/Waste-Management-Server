@@ -19,7 +19,7 @@ const createPickup = asyncHandler(async (req, res) => {
 
 
     const current_user = await User.findById(req.user?._id)
-    const { description,location,customerPrice } = req.body
+    const { description, location, customerPrice } = req.body
     if (
         [description].some((field) => field?.trim() === "")
     ) {
@@ -52,7 +52,7 @@ const createPickup = asyncHandler(async (req, res) => {
     }
 
     await sendEmail(
-        [email],"Pickup Created Successfully",`<h1>Hello ${fullName},</h1><br><h2>Your Pickup [ id : ${myPickup._id}] has been created successfully</h2>`
+        [email], "Pickup Created Successfully", `<h1>Hello ${fullName},</h1><br><h2>Your Pickup [ id : ${myPickup._id}] has been created successfully</h2>`
     );
 
 
@@ -65,4 +65,20 @@ const createPickup = asyncHandler(async (req, res) => {
 
 });
 
-export { createPickup };
+const deletePickup = asyncHandler(async (req, res) => {
+    const pickupId = req.query.id
+    const current_user = await User.findById(req.user?._id)
+    const myPickup = await Pickup.findById(pickupId)
+    if (!myPickup) {
+        throw new ApiError(404, "Pickup not found")
+    }
+    if (myPickup.owner.toString() !== current_user._id.toString()) {
+        throw new ApiError(401, "Not Pickup Customer")
+    }
+    await Pickup.findByIdAndDelete(pickupId)
+    return res.status(200).json(
+        new ApiResponse(200, null, "Pickup deleted successfully")
+    )
+})
+
+export { createPickup, deletePickup };
