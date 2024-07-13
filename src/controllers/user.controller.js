@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 import dotenv from "dotenv"
 import { sendEmail } from "../utils/sendMail.js";
+import {Pickup} from "../models/pickup.model.js";
 
 dotenv.config({
     path: './.env'
