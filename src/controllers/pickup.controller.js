@@ -116,13 +116,14 @@ const pickupDetails = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Pickup not found")
     }
     if (pickup.status === "pending" || pickup.status === "cancelled") {
-        new ApiResponse(200, pickup, "Pickup retrieved successfully")
+        const owner = await User.findById(pickup.owner);
+        new ApiResponse(200, { pickup, owner }, "Pickup retrieved successfully")
     }
     else {
         const worker = await User.findById(pickup.worker)
         const owner = await User.findById(pickup.owner)
         return res.status(200).json(
-            new ApiResponse(200, { pickup, worker,owner }, "Pickup retrieved successfully")
+            new ApiResponse(200, { pickup, worker, owner }, "Pickup retrieved successfully")
         )
     }
 })
