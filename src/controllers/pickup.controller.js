@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv"
 const { ObjectId } = mongoose.Types;
 import axios from "axios"
-import {sendEmail} from "../utils/sendMail.js";
+import { sendEmail } from "../utils/sendMail.js";
 
 dotenv.config({
     path: './.env'
@@ -20,7 +20,7 @@ const createPickup = asyncHandler(async (req, res) => {
 
 
     const current_user = await User.findById(req.user?._id)
-    const { description, location, customerPrice } = req.body
+    const { description, location, customerPrice, itemDescription, qty } = req.body
     if (
         [description].some((field) => field?.trim() === "")
     ) {
@@ -43,7 +43,9 @@ const createPickup = asyncHandler(async (req, res) => {
         description,
         location,
         customerPrice,
-        thumbnail:thumbnail.url,
+        itemDescription,
+        qty,
+        thumbnail: thumbnail.url,
         owner: current_user._id,
     })
 

@@ -19,15 +19,21 @@ const pickupSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User"
         },
-        acceptedPrice: {
-            type: Number,
-            default: 0
-        },
         status: {
             type: String,
             default: "pending"
         },
         location: {
+            type: [String],
+        },
+        items: {
+            type: [String],
+            default: ['Paper', 'Plastic', 'Glass', 'Metal', 'Organic', 'E-waste', 'Others']
+        },
+        itemDescription: {
+            type: [String],
+        },
+        qty: {
             type: [String],
         },
         customerPrice: {
