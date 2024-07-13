@@ -33,6 +33,9 @@ const pickupSchema = new Schema(
         itemDescription: {
             type: [String],
         },
+        timeArrival: {
+            type: Date,
+        },
         qty: {
             type: [String],
         },

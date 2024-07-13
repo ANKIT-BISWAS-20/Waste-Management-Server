@@ -23,4 +23,8 @@ app.use("/api/v1/users", userRouter)
 import pickupRouter from './src/routes/pickup.routes.js'
 app.use("/api/v1/pickup", pickupRouter)
 
+// Request Endpoints
+import requestRouter from './src/routes/request.routes.js'
+app.use("/api/v1/request", requestRouter)
+
 export { app }
