@@ -7,7 +7,9 @@ import {
     updateUserAvatar,
     getUserAnalytics,
     getWorkerAnalytics,
-    giveRating
+    giveRating,
+    getCurrentCustomer,
+    getCurrentWorker
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -36,5 +38,7 @@ router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvat
 router.route("/analytics").get(verifyJWT, isCustomer, getUserAnalytics)
 router.route("/worker-analytics").get(verifyJWT, isWorker, getWorkerAnalytics)
 router.route("/give-rating").post(verifyJWT, giveRating)
+router.route("/current-customer").get(verifyJWT, isCustomer, getCurrentCustomer)
+router.route("/current-worker").get(verifyJWT, isWorker, getCurrentWorker)
 
 export default router

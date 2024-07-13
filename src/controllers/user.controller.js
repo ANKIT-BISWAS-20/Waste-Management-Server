@@ -311,6 +311,26 @@ const giveRating = asyncHandler(async (req, res) => {
 
 });
 
+const getCurrentCustomer = asyncHandler(async(req, res) => {
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        req.user,
+        "Customer fetched successfully"
+    ))
+})
+
+const getCurrentWorker = asyncHandler(async(req, res) => {
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        req.user,
+        "Worker fetched successfully"
+    ))
+})
 
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar, getUserAnalytics, getWorkerAnalytics, giveRating };
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar, getUserAnalytics, getWorkerAnalytics, giveRating, getCurrentCustomer, getCurrentWorker };
