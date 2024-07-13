@@ -117,7 +117,9 @@ const pickupDetails = asyncHandler(async (req, res) => {
     }
     if (pickup.status === "pending" || pickup.status === "cancelled") {
         const owner = await User.findById(pickup.owner);
-        new ApiResponse(200, { pickup, owner }, "Pickup retrieved successfully")
+        return res.status(200).json(
+            new ApiResponse(200, { pickup, owner }, "Pickup retrieved successfully")
+        )
     }
     else {
         const worker = await User.findById(pickup.worker)
