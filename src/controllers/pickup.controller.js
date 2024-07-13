@@ -60,9 +60,9 @@ const createPickup = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while creating the pickup")
     }
 
-    await sendEmail(
-        [current_user.email], "Pickup Created Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Pickup [ id : ${myPickup._id}] has been created successfully</h2>`
-    );
+    // await sendEmail(
+    //     [current_user.email], "Pickup Created Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Pickup [ id : ${myPickup._id}] has been created successfully</h2>`
+    // );
 
 
     return res.status(201).json(
@@ -150,12 +150,12 @@ const workerGiveTime = asyncHandler(async (req, res) => {
 
     pickup.status = "scheduled"
     await pickup.save()
-    await sendEmail(
-        [current_user.email], "Time Given Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Pickup [ id : ${pickup._id}] has been scheduled successfully at ${formattedTime}</h2>`
-    );
-    await sendEmail(
-        [pickupOwner.email], "Time Given", `<h1>Hello ${pickupOwner.fullName},</h1><br><h2>Your Pickup [ id : ${pickup._id}] has been scheduled successfully at ${formattedTime}</h2>`
-    );
+    // await sendEmail(
+    //     [current_user.email], "Time Given Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Pickup [ id : ${pickup._id}] has been scheduled successfully at ${formattedTime}</h2>`
+    // );
+    // await sendEmail(
+    //     [pickupOwner.email], "Time Given", `<h1>Hello ${pickupOwner.fullName},</h1><br><h2>Your Pickup [ id : ${pickup._id}] has been scheduled successfully at ${formattedTime}</h2>`
+    // );
     return res.status(200).json(
         new ApiResponse(200, pickup, "Time given successfully")
     )
@@ -204,13 +204,13 @@ const makePayment = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while creating the session")
     }
 
-    sendEmail(
-        [current_user.email], "Payment Initiated Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been initiated successfully</h2>`
-    );
+    // sendEmail(
+    //     [current_user.email], "Payment Initiated Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been initiated successfully</h2>`
+    // );
 
-    sendEmail(
-        [pickupOwner.email], "Payment Initiated", `<h1>Hello ${pickupOwner.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been initiated successfully</h2>`
-    );
+    // sendEmail(
+    //     [pickupOwner.email], "Payment Initiated", `<h1>Hello ${pickupOwner.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been initiated successfully</h2>`
+    // );
 
     return res.status(200).json(
         new ApiResponse(200, { session }, "Payment initiated successfully")
@@ -236,13 +236,13 @@ const markAsPaid = asyncHandler(async (req, res) => {
     pickup.paymentDone = true
     pickup.status = "completed"
     await pickup.save()
-    await sendEmail(
-        [current_user.email], "Payment Done Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been done successfully</h2>`
-    );
+    // await sendEmail(
+    //     [current_user.email], "Payment Done Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been done successfully</h2>`
+    // );
 
-    await sendEmail(
-        [pickupWorker.email], "Payment Done", `<h1>Hello ${pickupWorker.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been done successfully</h2>`
-    );
+    // await sendEmail(
+    //     [pickupWorker.email], "Payment Done", `<h1>Hello ${pickupWorker.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been done successfully</h2>`
+    // );
     return res.status(200).json(
         new ApiResponse(200, pickup, "Payment done successfully")
     )

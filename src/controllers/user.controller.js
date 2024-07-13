@@ -80,9 +80,9 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while registering the user")
     }
 
-    await sendEmail(
-        [email], "Account Created Successfully", `<h1>Hello ${fullName},</h1><br><h2>Your account has been created successfully</h2>`
-    );
+    // await sendEmail(
+    //     [email], "Account Created Successfully", `<h1>Hello ${fullName},</h1><br><h2>Your account has been created successfully</h2>`
+    // );
 
     return res.status(201).json(
         new ApiResponse(200, createdUser, "User registered Successfully")
