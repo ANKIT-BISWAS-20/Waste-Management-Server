@@ -120,8 +120,9 @@ const pickupDetails = asyncHandler(async (req, res) => {
     }
     else {
         const worker = await User.findById(pickup.worker)
+        const owner = await User.findById(pickup.owner)
         return res.status(200).json(
-            new ApiResponse(200, { pickup, worker }, "Pickup retrieved successfully")
+            new ApiResponse(200, { pickup, worker,owner }, "Pickup retrieved successfully")
         )
     }
 })
