@@ -60,7 +60,7 @@ const createRequest = asyncHandler(async (req, res) => {
     )
 })
 
-const AccptRequest = asyncHandler(async (req, res) => {
+const AcceptRequest = asyncHandler(async (req, res) => {
     const requestId = req.query.requestId
     const userId = req.user._id
     const current_user = await User.findById(userId)
@@ -115,3 +115,53 @@ const AccptRequest = asyncHandler(async (req, res) => {
         }, "Request Accepted Successfully")
     )
 })
+
+const viewRequests = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const pickupId = req.query.pickupId;
+    const current_user = await User.findById(userId);
+    const pickup = await Pickup.findById(pickupId);
+    if (!pickup) {
+        throw new ApiError(400, "Pickup not found");
+    }
+    const owner = await User.findById(pickup.owner);
+    if (!owner) {
+        throw new ApiError(400, "Owner not found");
+    }
+    if (owner._id.toString() !== userId.toString()) {
+        throw new ApiError(400, "You are not the owner of the pickup");
+    }
+    const requests = await Request.aggregate([
+        {
+            $match: {
+                pickup: pickup._id,
+                status: "pending",
+            },
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+            },
+        },
+        {
+            $unwind: "$owner",
+        },
+    ]);
+
+    if (!requests) {
+        throw new ApiError(400, "Requests not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            user: current_user,
+            requests: requests,
+        }, "Requests fetched Successfully")
+    );
+
+})
+
+export { createRequest, AcceptRequest, viewRequests }
