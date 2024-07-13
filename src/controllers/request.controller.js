@@ -90,4 +90,28 @@ const AccptRequest = asyncHandler(async (req, res) => {
             status: "accepted"
         }
     )
+
+    if (!updatedPickup) {
+        throw new ApiError(500, "Something went wrong while accepting the request")
+    }
+
+    const worker = await User.findById(request.owner)
+    if (!worker) {
+        throw new ApiError(400, "Worker not found")
+    }
+
+    await sendEmail(
+        [current_user.email], "Request Accepted Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Request [ id : ${request._id}] has been accepted successfully for Pickup [id : ${request.pickup}] </h2>`
+    );
+
+    await sendEmail(
+        [worker.email], "Request Accepted", `<h1>Hello ${worker.fullName},</h1><br><h2>Your Request [ id : ${request._id}] has been accepted successfully for Pickup [id : ${request.pickup}] </h2>`
+    );
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            user: current_user,
+            updatedPickup: updatedPickup,
+        }, "Request Accepted Successfully")
+    )
 })
