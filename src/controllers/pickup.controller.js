@@ -10,7 +10,7 @@ import dotenv from "dotenv"
 const { ObjectId } = mongoose.Types;
 import axios from "axios"
 import { sendEmail } from "../utils/sendMail.js";
-import {loadStripe} from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 
 
@@ -211,8 +211,38 @@ const makePayment = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, { session }, "Payment initiated successfully")
     )
-    
+
 })
 
 
-export { createPickup, deletePickup, customerViewPickups, workerViewPickups, pickupDetails, workerGiveTime, makePayment };
+const markAsPaid = asyncHandler(async (req, res) => {
+    const pickupId = req.query.id
+    const current_user = await User.findById(req.user?._id);
+    const pickup = await Pickup.findById(pickupId)
+    if (!pickup) {
+        throw new ApiError(404, "Pickup not found")
+    }
+    if (pickup.status !== "scheduled") {
+        throw new ApiError(400, "It is not possible to make payment to a pickup that is not scheduled")
+    }
+    if (pickup.owner.toString() !== current_user._id.toString()) {
+        throw new ApiError(401, "Not Pickup Customer")
+    }
+    const pickupWorker = await User.findById(pickup.worker)
+    pickup.paymentDone = true
+    pickup.status = "completed"
+    await pickup.save()
+    await sendEmail(
+        [current_user.email], "Payment Done Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been done successfully</h2>`
+    );
+
+    await sendEmail(
+        [pickupWorker.email], "Payment Done", `<h1>Hello ${pickupWorker.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been done successfully</h2>`
+    );
+    return res.status(200).json(
+        new ApiResponse(200, pickup, "Payment done successfully")
+    )
+})
+
+
+export { createPickup, deletePickup, customerViewPickups, workerViewPickups, pickupDetails, workerGiveTime, makePayment, markAsPaid };

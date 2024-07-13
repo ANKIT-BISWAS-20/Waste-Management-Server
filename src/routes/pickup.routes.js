@@ -6,7 +6,8 @@ import {
     workerViewPickups,
     pickupDetails,
     workerGiveTime,
-    makePayment
+    makePayment,
+    markAsPaid
 } from "../controllers/pickup.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -59,6 +60,12 @@ router.route("/makePayment").post(
     verifyJWT,
     isWorker,
     makePayment
+)
+
+router.route("/markAsPaid").post(
+    verifyJWT,
+    isCustomer,
+    markAsPaid
 )
 
 
