@@ -294,5 +294,23 @@ const getWorkerAnalytics = asyncHandler(async (req, res) => {
     )
 });
 
+const giveRating = asyncHandler(async (req, res) => {
+    const { rating } = req.body
+    const toWhom = req.query.id;
+    const current_user = await User.findById(req.user?._id);
+    const ratingTo = await User.findById(toWhom);
+    if (!ratingTo) {
+        throw new ApiError(404, "User not found")
+    }
+    const userRating = parseInt(ratingTo.rating);
+    const newRating = Math.round((userRating + parseInt(rating)) / 2);
+    const Response = await User.findByIdAndUpdate(toWhom, { rating: newRating });
+    return res.status(200).json(
+        new ApiResponse(200, Response, "Rating given successfully")
+    )
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar, getUserAnalytics, getWorkerAnalytics };
+});
+
+
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar, getUserAnalytics, getWorkerAnalytics, giveRating };
