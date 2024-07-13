@@ -1,7 +1,11 @@
 import { Router } from "express";
 import {
     createPickup,
-    deletePickup
+    deletePickup,
+    customerViewPickups,
+    workerViewPickups,
+    pickupDetails,
+    workerGiveTime
 } from "../controllers/pickup.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -25,6 +29,29 @@ router.route("/create").post(
 router.route("/delete").delete(
     verifyJWT,
     deletePickup
+)
+
+router.route("/customer/view").get(
+    verifyJWT,
+    isCustomer,
+    customerViewPickups
+)
+
+router.route("/worker/view").get(
+    verifyJWT,
+    isWorker,
+    workerViewPickups
+)
+
+router.route("/details").get(
+    verifyJWT,
+    pickupDetails
+)
+
+router.route("/worker/giveTime").post(
+    verifyJWT,
+    isWorker,
+    workerGiveTime
 )
 
 
