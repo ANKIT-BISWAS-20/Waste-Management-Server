@@ -1,8 +1,8 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {ApiError} from "../utils/ApiError.js"
-import { User} from "../models/user.model.js"
+import { ApiError } from "../utils/ApiError.js"
+import { User } from "../models/user.model.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 import dotenv from "dotenv"
@@ -12,7 +12,7 @@ dotenv.config({
     path: './.env'
 })
 
-const generateAccessAndRefereshTokens = async(userId) =>{
+const generateAccessAndRefereshTokens = async (userId) => {
     try {
         const user = await User.findById(userId)
         const accessToken = user.generateAccessToken()
@@ -21,7 +21,7 @@ const generateAccessAndRefereshTokens = async(userId) =>{
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
 
-        return {accessToken, refreshToken}
+        return { accessToken, refreshToken }
 
 
     } catch (error) {
@@ -30,9 +30,9 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 }
 
 
-const registerUser = asyncHandler( async (req, res) => {
+const registerUser = asyncHandler(async (req, res) => {
 
-    const {fullName, email, username, password, contactNo, address, language,role} = req.body
+    const { fullName, email, username, password, contactNo, address, language, role } = req.body
 
     if (
         [fullName, email, username, password,].some((field) => field?.trim() === "")
@@ -58,17 +58,17 @@ const registerUser = asyncHandler( async (req, res) => {
     if (!avatar) {
         throw new ApiError(400, "Avatar file is required")
     }
-   
+
 
     const user = await User.create({
         fullName,
         avatar: avatar.url,
-        email, 
+        email,
         password,
         username: username.toLowerCase(),
-        contactNo, 
-        address, 
-        language, 
+        contactNo,
+        address,
+        language,
         role
     })
 
@@ -81,19 +81,19 @@ const registerUser = asyncHandler( async (req, res) => {
     }
 
     await sendEmail(
-        [email],"Account Created Successfully",`<h1>Hello ${fullName},</h1><br><h2>Your account has been created successfully</h2>`
+        [email], "Account Created Successfully", `<h1>Hello ${fullName},</h1><br><h2>Your account has been created successfully</h2>`
     );
 
     return res.status(201).json(
         new ApiResponse(200, createdUser, "User registered Successfully")
     )
 
-} )
+})
 
 
-const loginUser = asyncHandler(async (req, res) =>{
+const loginUser = asyncHandler(async (req, res) => {
 
-    const {email, username, password} = req.body
+    const { email, username, password } = req.body
     // console.log(email);
 
     if (!username && !email) {
@@ -101,20 +101,20 @@ const loginUser = asyncHandler(async (req, res) =>{
     }
 
     const user = await User.findOne({
-        $or: [{username}, {email}]
+        $or: [{ username }, { email }]
     })
 
     if (!user) {
         throw new ApiError(404, "User does not exist")
     }
 
-   const isPasswordValid = await user.isPasswordCorrect(password)
+    const isPasswordValid = await user.isPasswordCorrect(password)
 
-   if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid user credentials")
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid user credentials")
     }
 
-   const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id)
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
@@ -124,23 +124,23 @@ const loginUser = asyncHandler(async (req, res) =>{
     }
 
     return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-        new ApiResponse(
-            200, 
-            {
-                user: loggedInUser, accessToken, refreshToken
-            },
-            "User logged In Successfully"
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: loggedInUser, accessToken, refreshToken
+                },
+                "User logged In Successfully"
+            )
         )
-    )
 
 });
 
 
-const logoutUser = asyncHandler(async(req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -159,10 +159,10 @@ const logoutUser = asyncHandler(async(req, res) => {
     }
 
     return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged Out"))
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "User logged Out"))
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -176,43 +176,43 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             incomingRefreshToken,
             process.env.REFRESH_TOKEN_SECRET
         )
-    
+
         const user = await User.findById(decodedToken?._id)
-    
+
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
         }
-    
+
         if (incomingRefreshToken !== user?.refreshToken) {
             throw new ApiError(401, "Refresh token is expired or used")
-            
+
         }
-    
+
         const options = {
             httpOnly: true,
             secure: true
         }
-    
-        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
-    
+
+        const { accessToken, newRefreshToken } = await generateAccessAndRefereshTokens(user._id)
+
         return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
-        .json(
-            new ApiResponse(
-                200, 
-                {accessToken, refreshToken: newRefreshToken},
-                "Access token refreshed"
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", newRefreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    { accessToken, refreshToken: newRefreshToken },
+                    "Access token refreshed"
+                )
             )
-        )
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid refresh token")
     }
 
 });
 
-const updateUserAvatar = asyncHandler(async(req, res) => {
+const updateUserAvatar = asyncHandler(async (req, res) => {
     const avatarLocalPath = req.file?.path
 
     if (!avatarLocalPath) {
@@ -229,19 +229,45 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
-            $set:{
+            $set: {
                 avatar: avatar.url
             }
         },
-        {new: true}
+        { new: true }
     ).select("-password")
 
     return res
-    .status(200)
-    .json(
-        new ApiResponse(200, user, "Avatar image updated successfully")
+        .status(200)
+        .json(
+            new ApiResponse(200, user, "Avatar image updated successfully")
+        )
+});
+
+const getUserAnalytics = asyncHandler(async (req, res) => {
+    const current_user = await User.findById(req.user?._id);
+    const totalPickups = await Pickup.find({ owner: current_user._id }).countDocuments()
+    const totalPendingPickups = await Pickup.find({ owner: current_user._id, status: "pending" }).countDocuments()
+    const totalAcceptedPickups = await Pickup.find({ owner: current_user._id, status: "accepted" }).countDocuments()
+    const totalCompletedPickups = await Pickup.find({ owner: current_user._id, status: "completed" }).countDocuments()
+    const completedPickups = await Pickup.find({ owner: current_user._id, status: "completed" })
+    let totalContribution = [];
+    completedPickups.forEach(pickup => {
+        let totalAmount = 0
+        let qty = [];
+        for (let i = 0; i < pickup.workerPrice.length; i++) {
+            const item = parseFloat(pickup.workerPrice[i])
+            const qty = parseFloat(pickup.qty[i])
+            qty.push(qty)
+            totalAmount += Math.round(item * qty)
+        }
+        totalContribution.push({ _id: pickup._id, totalAmount, qty })
+    })
+    const rating = current_user.rating;
+    return res.status(200).json(
+        new ApiResponse(200, { totalPickups, totalPendingPickups, totalAcceptedPickups, totalCompletedPickups, totalContribution, rating }, "User analytics retrieved successfully")
     )
+
 });
 
 
-export {registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar};
+export { registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar, getUserAnalytics };
