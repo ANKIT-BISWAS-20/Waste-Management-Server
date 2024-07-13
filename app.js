@@ -27,4 +27,8 @@ app.use("/api/v1/pickup", pickupRouter)
 import requestRouter from './src/routes/request.routes.js'
 app.use("/api/v1/request", requestRouter)
 
+// Comment Endpoints
+import commentRouter from './src/routes/comment.routes.js'
+app.use("/api/v1/comment", commentRouter)
+
 export { app }
