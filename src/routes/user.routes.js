@@ -5,11 +5,13 @@ import {
     logoutUser,
     refreshAccessToken,
     updateUserAvatar,
-    getUserAnalytics
+    getUserAnalytics,
+    getWorkerAnalytics
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { isCustomer } from "../middlewares/isCustomer.middleware.js";
+import { isWorker } from "../middlewares/isWorker.middleware.js";
 
 const router = Router()
 
@@ -31,5 +33,6 @@ router.route("/logout").post(verifyJWT, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
 router.route("/analytics").get(verifyJWT, isCustomer, getUserAnalytics)
+router.route("/worker-analytics").get(verifyJWT,isWorker, getUserAnalytics)
 
 export default router

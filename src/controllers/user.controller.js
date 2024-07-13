@@ -269,5 +269,30 @@ const getUserAnalytics = asyncHandler(async (req, res) => {
 
 });
 
+const getWorkerAnalytics = asyncHandler(async (req, res) => {
+    const current_user = await User.findById(req.user?._id);
+    const totalPickups = await Pickup.find({ worker: current_user._id }).countDocuments()
+    const totalPendingPickups = await Pickup.find({ worker: current_user._id, status: "pending" }).countDocuments()
+    const totalAcceptedPickups = await Pickup.find({ worker: current_user._id, status: "accepted" }).countDocuments()
+    const totalCompletedPickups = await Pickup.find({ worker: current_user._id, status: "completed" }).countDocuments()
+    const completedPickups = await Pickup.find({ worker: current_user._id, status: "completed" })
+    let totalContribution = [];
+    completedPickups.forEach(pickup => {
+        let totalAmount = 0
+        let qty = [];
+        for (let i = 0; i < pickup.workerPrice.length; i++) {
+            const item = parseFloat(pickup.workerPrice[i])
+            const qty = parseFloat(pickup.qty[i])
+            qty.push(qty)
+            totalAmount += Math.round(item * qty)
+        }
+        totalContribution.push({ _id: pickup._id, totalAmount, qty })
+    })
+    const rating = current_user.rating;
+    return res.status(200).json(
+        new ApiResponse(200, { totalPickups, totalPendingPickups, totalAcceptedPickups, totalCompletedPickups, totalContribution, rating }, "User analytics retrieved successfully")
+    )
+});
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar, getUserAnalytics };
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, updateUserAvatar, getUserAnalytics, getWorkerAnalytics };
