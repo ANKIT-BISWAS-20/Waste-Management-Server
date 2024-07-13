@@ -85,9 +85,12 @@ const AcceptRequest = asyncHandler(async (req, res) => {
             _id: request.pickup
         },
         {
-            acceptedWorker: request.owner,
+            worker: request.owner,
             workerPrice: request.reqPrice,
             status: "accepted"
+        },
+        {
+            new: true
         }
     )
 

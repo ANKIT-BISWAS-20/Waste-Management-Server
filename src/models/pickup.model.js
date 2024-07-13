@@ -7,7 +7,7 @@ const pickupSchema = new Schema(
             type: String,
             required: true
         },
-        acceptedWorker: {
+        worker: {
             type: Schema.Types.ObjectId,
             ref: "User"
         },
