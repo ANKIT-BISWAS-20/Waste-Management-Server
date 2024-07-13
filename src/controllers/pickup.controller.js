@@ -10,10 +10,15 @@ import dotenv from "dotenv"
 const { ObjectId } = mongoose.Types;
 import axios from "axios"
 import { sendEmail } from "../utils/sendMail.js";
+import {loadStripe} from '@stripe/stripe-js';
+
+
 
 dotenv.config({
     path: './.env'
 })
+
+const stripe = await loadStripe(process.env.STRIPE_SECRET_KEY);
 
 
 const createPickup = asyncHandler(async (req, res) => {
@@ -152,5 +157,62 @@ const workerGiveTime = asyncHandler(async (req, res) => {
     )
 })
 
+const makePayment = asyncHandler(async (req, res) => {
+    const current_user = await User.findById(req.user?._id);
+    const pickupId = req.query.id
+    const pickup = await Pickup.findById(pickupId)
+    if (!pickup) {
+        throw new ApiError(404, "Pickup not found")
+    }
+    if (pickup.status !== "scheduled") {
+        throw new ApiError(400, "It is not possible to make payment to a pickup that is not scheduled")
+    }
+    if (pickup.worker.toString() !== current_user._id.toString()) {
+        throw new ApiError(401, "Not Pickup Worker")
+    }
+    const pickupOwner = await User.findById(pickup.owner)
+    let totalAmount = 0;
+    for (let i = 0; i < pickup.workerPrice.length; i++) {
+        const item = parseFloat(pickup.workerPrice[i])
+        const qty = parseFloat(pickup.qty[i])
+        totalAmount += Math.round(item * qty)
+    }
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+            {
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: 'Pickup Payment',
+                    },
+                    unit_amount: totalAmount * 100,
+                },
+                quantity: 1,
+            },
+        ],
+        mode: 'payment',
+        success_url: ``,
+        cancel_url: ``,
+    });
 
-export { createPickup, deletePickup, customerViewPickups, workerViewPickups, pickupDetails, workerGiveTime };
+    if (!session) {
+        throw new ApiError(500, "Something went wrong while creating the session")
+    }
+
+    sendEmail(
+        [current_user.email], "Payment Initiated Successfully", `<h1>Hello ${current_user.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been initiated successfully</h2>`
+    );
+
+    sendEmail(
+        [pickupOwner.email], "Payment Initiated", `<h1>Hello ${pickupOwner.fullName},</h1><br><h2>Your Payment for Pickup [ id : ${pickup._id}] has been initiated successfully</h2>`
+    );
+
+    return res.status(200).json(
+        new ApiResponse(200, { session }, "Payment initiated successfully")
+    )
+    
+})
+
+
+export { createPickup, deletePickup, customerViewPickups, workerViewPickups, pickupDetails, workerGiveTime, makePayment };
