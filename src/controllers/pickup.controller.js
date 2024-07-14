@@ -151,16 +151,13 @@ const workerGiveTime = asyncHandler(async (req, res) => {
     if (!pickup) {
         throw new ApiError(404, "Pickup not found")
     }
-    if (pickup.status !== "accepted") {
-        throw new ApiError(400, "It is not possible to give time to a pickup that is not accepted")
-    }
+    
     if (pickup.worker.toString() !== current_user._id.toString()) {
         throw new ApiError(401, "Not Pickup Worker")
     }
     const formattedTime = new Date(time).toLocaleString()
     const pickupOwner = await User.findById(pickup.owner)
-    pickup.time = new Date(time)
-
+    pickup.timeArrival = new Date(time)
     pickup.status = "scheduled"
     await pickup.save()
     // await sendEmail(
