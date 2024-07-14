@@ -263,7 +263,6 @@ const getUserAnalytics = asyncHandler(async (req, res) => {
         }
         totalContribution.push({ _id: pickup._id, totalAmount, qty })
     })
-    console.log(totalContribution)
     const rating = current_user.rating;
     return res.status(200).json(
         new ApiResponse(200, { totalPickups, totalPendingPickups, totalAcceptedPickups, totalCompletedPickups, totalContribution, rating }, "User analytics retrieved successfully")
