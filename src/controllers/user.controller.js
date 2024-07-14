@@ -261,7 +261,7 @@ const getUserAnalytics = asyncHandler(async (req, res) => {
             qty.push(qty1)
             totalAmount += Math.round(item * qty1)
         }
-        totalContribution.push({ _id: pickup._id, totalAmount, qty })
+        totalContribution.push({ _id: pickup.updatedAt, totalAmount, qty })
     })
     const rating = current_user.rating;
     return res.status(200).json(
@@ -287,7 +287,7 @@ const getWorkerAnalytics = asyncHandler(async (req, res) => {
             qty.push(qty1)
             totalAmount += Math.round(item * qty1)
         }
-        totalContribution.push({ _id: pickup._id, totalAmount, qty })
+        totalContribution.push({ _id: pickup.updatedAt, totalAmount, qty })
     })
     const rating = current_user.rating;
     return res.status(200).json(
