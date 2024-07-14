@@ -136,22 +136,21 @@ const viewRequests = asyncHandler(async (req, res) => {
     }
     const requests = await Request.aggregate([
         {
-            $match: {
-                pickup: pickup._id,
-                status: "pending",
-            },
-        },
-        {
-            $lookup: {
-                from: "users",
-                localField: "owner",
-                foreignField: "_id",
-                as: "owner",
-            },
-        },
-        {
-            $unwind: "$owner",
-        },
+            "$match": {
+              "pickup": pickup._id,
+            }
+          },
+          {
+            "$lookup": {
+              "from": "users",
+              "localField": "owner",
+              "foreignField": "_id",
+              "as": "owner"
+            }
+          },
+          {
+            "$unwind": "$owner"
+          }
     ]);
 
     if (!requests) {
@@ -159,10 +158,7 @@ const viewRequests = asyncHandler(async (req, res) => {
     }
 
     return res.status(200).json(
-        new ApiResponse(200, {
-            user: current_user,
-            requests: requests,
-        }, "Requests fetched Successfully")
+        new ApiResponse(200, requests, "Requests fetched Successfully")
     );
 
 })
