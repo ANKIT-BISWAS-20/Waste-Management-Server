@@ -104,7 +104,19 @@ const customerViewPickups = asyncHandler(async (req, res) => {
 
 const workerViewPickups = asyncHandler(async (req, res) => {
     const current_user = await User.findById(req.user?._id);
-    const pickups = await Pickup.find()
+    const pickups = await Pickup.aggregate([
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+        },
+        {
+            $unwind: "$owner"
+        }
+    ])
     return res.status(200).json(
         new ApiResponse(200, {pickups,current_user}, "Pickups retrieved successfully")
     )
