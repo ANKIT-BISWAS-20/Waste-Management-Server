@@ -257,12 +257,13 @@ const getUserAnalytics = asyncHandler(async (req, res) => {
         let qty = [];
         for (let i = 0; i < pickup.workerPrice.length; i++) {
             const item = parseFloat(pickup.workerPrice[i])
-            const qty = parseFloat(pickup.qty[i])
-            qty.push(qty)
-            totalAmount += Math.round(item * qty)
+            const qty1 = parseFloat(pickup.qty[i])
+            qty.push(qty1)
+            totalAmount += Math.round(item * qty1)
         }
         totalContribution.push({ _id: pickup._id, totalAmount, qty })
     })
+    console.log(totalContribution)
     const rating = current_user.rating;
     return res.status(200).json(
         new ApiResponse(200, { totalPickups, totalPendingPickups, totalAcceptedPickups, totalCompletedPickups, totalContribution, rating }, "User analytics retrieved successfully")
@@ -283,9 +284,9 @@ const getWorkerAnalytics = asyncHandler(async (req, res) => {
         let qty = [];
         for (let i = 0; i < pickup.workerPrice.length; i++) {
             const item = parseFloat(pickup.workerPrice[i])
-            const qty = parseFloat(pickup.qty[i])
-            qty.push(qty)
-            totalAmount += Math.round(item * qty)
+            const qty1 = parseFloat(pickup.qty[i])
+            qty.push(qty1)
+            totalAmount += Math.round(item * qty1)
         }
         totalContribution.push({ _id: pickup._id, totalAmount, qty })
     })
