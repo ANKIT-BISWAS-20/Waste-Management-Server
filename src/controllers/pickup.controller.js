@@ -104,7 +104,7 @@ const customerViewPickups = asyncHandler(async (req, res) => {
 
 const workerViewPickups = asyncHandler(async (req, res) => {
     const current_user = await User.findById(req.user?._id);
-    const pickups = await Pickup.find({ worker: current_user._id })
+    const pickups = await Pickup.find()
     return res.status(200).json(
         new ApiResponse(200, pickups, "Pickups retrieved successfully")
     )
